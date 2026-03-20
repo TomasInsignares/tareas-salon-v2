@@ -40,17 +40,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--slate-100);color:var(--sl
 .main{max-width:980px;margin:0 auto;padding:1.75rem 1.5rem}
 .main-grid{display:grid;grid-template-columns:1fr 290px;gap:1.5rem;align-items:start}
 
-/* SEARCH + FILTER ROW */
-.search-row{display:flex;gap:8px;margin-bottom:1rem;align-items:center}
-.search-wrap{position:relative;flex:1}
-.search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--slate-400);pointer-events:none}
-.search-input{width:100%;padding:8px 10px 8px 34px;border:1px solid var(--slate-200);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--slate-800);background:white;outline:none;transition:border-color .15s}
-.search-input:focus{border-color:var(--blue-400);box-shadow:0 0 0 3px rgba(59,142,243,.12)}
-.search-input::placeholder{color:var(--slate-400)}
-.subject-filter-wrap{position:relative}
-.subject-filter{padding:8px 28px 8px 10px;border:1px solid var(--slate-200);border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--slate-600);background:white;outline:none;appearance:none;-webkit-appearance:none;cursor:pointer;transition:border-color .15s;min-width:140px}
-.subject-filter:focus{border-color:var(--blue-400)}
-.subject-filter-wrap::after{content:'';position:absolute;right:9px;top:50%;transform:translateY(-50%);width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid var(--slate-400);pointer-events:none}
+
 
 /* STATS */
 .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1rem}
@@ -202,8 +192,6 @@ textarea{resize:vertical;min-height:72px;line-height:1.5}
   .form-row{grid-template-columns:1fr}
   .header{padding:0 1rem}
   .main{padding:1.25rem 1rem}
-  .search-row{flex-wrap:wrap}
-  .subject-filter{min-width:100%;flex:1}
 }
 </style>
 </head>
@@ -258,37 +246,9 @@ textarea{resize:vertical;min-height:72px;line-height:1.5}
         </div>
       </div>
 
-      <!-- BÚSQUEDA + FILTRO MATERIA -->
-      <div class="search-row">
-        <div class="search-wrap">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-          <input type="text" class="search-input" id="search-input" placeholder="Buscar tarea..." oninput="render()">
-        </div>
-        <div class="subject-filter-wrap">
-          <select class="subject-filter" id="subject-filter" onchange="render()">
-            <option value="">Todas las materias</option>
-            <option value="matematicas">Matemáticas</option>
-            <option value="fisica">Física</option>
-            <option value="quimica">Química</option>
-            <option value="biologia">Biología</option>
-            <option value="sociales">Sociales</option>
-            <option value="espanol">Español</option>
-            <option value="musica">Música</option>
-            <option value="artes">Artes</option>
-            <option value="etica">Ética y Valores</option>
-            <option value="aleman">Alemán</option>
-            <option value="ingles">Inglés</option>
-            <option value="historia">Historia</option>
-            <option value="deportes">Deportes</option>
-            <option value="informatica">Informática</option>
-            <option value="otro">Otro</option>
-          </select>
-        </div>
-      </div>
 
       <div class="filter-bar">
         <button class="filter-tab active" data-filter="all" onclick="setFilter('all')">Todas</button>
-        <button class="filter-tab" data-filter="pending" onclick="setFilter('pending')">Pendientes</button>
         <button class="filter-tab" data-filter="soon" onclick="setFilter('soon')">Próximas</button>
         <button class="filter-tab" data-filter="overdue" onclick="setFilter('overdue')">Vencidas</button>
       </div>
@@ -518,25 +478,12 @@ function render(){
   updateStats();
   const list=document.getElementById('task-list');
   const today=todayStr();
-  const searchVal=document.getElementById('search-input').value.toLowerCase().trim();
-  const subjectVal=document.getElementById('subject-filter').value;
-
   let filtered=[...tasks];
 
   // Filtro de pestaña
   if(currentFilter==='pending') filtered=filtered.filter(t=>t.date>=today);
   else if(currentFilter==='soon') filtered=filtered.filter(t=>{const d=daysDiff(t.date);return d>=0&&d<=SOON_DAYS;});
   else if(currentFilter==='overdue') filtered=filtered.filter(t=>t.date<today);
-
-  // Filtro materia
-  if(subjectVal) filtered=filtered.filter(t=>t.subject===subjectVal);
-
-  // Búsqueda
-  if(searchVal) filtered=filtered.filter(t=>
-    t.title.toLowerCase().includes(searchVal)||
-    (SUBJECT_LABELS[t.subject]||'').toLowerCase().includes(searchVal)||
-    (t.desc||'').toLowerCase().includes(searchVal)
-  );
 
   if(!filtered.length){
     list.innerHTML=`<div class="empty"><div class="empty-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg></div><p>No hay tareas</p></div>`;
