@@ -534,9 +534,8 @@ window.toggleOverdue=btn=>{
 
 function cardHTML(t){
   const today=todayStr();
-  const isOverdue=t.date<today,isToday=t.date===today;
   const diff=daysDiff(t.date);
-  const isOverdue=t.date<todayStr();
+  const isOverdue=t.date<today;
   const cls=isOverdue?'overdue':diff<=1?'soon1':diff<=SOON_DAYS?'soon2':'';
   const bc=badgeClass(t.date);
   const descId=`desc-${t.id}`;
